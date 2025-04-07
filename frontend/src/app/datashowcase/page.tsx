@@ -21,7 +21,7 @@ export default function DataShowcase() {
     const router = useRouter();
 
     const fetchData = async () => {
-        const res = await axios.get('/api/showcase');
+        const res = await axios.get('http://localhost:3001/api/showcase');
         setUsers(res.data);
     };
 

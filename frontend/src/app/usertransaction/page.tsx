@@ -20,7 +20,7 @@ export default function TransactionForm() {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const res = await axios.get('/api/showcase');
+            const res = await axios.get('http://localhost:3001/api/showcase');
             const activeUsers = res.data.filter((u: { status: string }) => u.status === 'Active');
             setUsers(activeUsers.map((u: { id: number; name: string; deposit: string; status: string }) => ({
                 id: u.id,
@@ -42,7 +42,7 @@ export default function TransactionForm() {
         if (!selectedUser) return setMessage('Please select a valid user.');
 
         try {
-            const res = await axios.post('/api/transaction', {
+            const res = await axios.post('http://localhost:3001/api/transaction', {
                 user_id: selectedUser.id,
                 amount: parseFloat(amount),
                 paymethod,
