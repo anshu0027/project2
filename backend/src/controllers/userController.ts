@@ -37,7 +37,8 @@ export const getShowcaseUsers: RequestHandler = async (req, res, next) => {
                     [user.id]
                 );
                 const paid = (trans[0]?.paid || 0) + Number(user.deposit);
-                const due = Number(user.total_confirmed_amount) - paid;
+                const total = Number(user.total_confirmed_amount);
+                const due = total - paid;
                 const completed = due <= 0;
 
                 return {
@@ -48,6 +49,7 @@ export const getShowcaseUsers: RequestHandler = async (req, res, next) => {
                     deposit: `${user.deposit} ${user.currency}`,
                     paid: `${paid} ${user.currency}`,
                     due: `${due} ${user.currency}`,
+                    total: `${total} ${user.currency}`,
                     status: user.status === 1 ? 'Active' : 'Inactive',
                     payment_status: completed ? 'Completed' : 'Incomplete',
                 };
@@ -59,3 +61,4 @@ export const getShowcaseUsers: RequestHandler = async (req, res, next) => {
         next(err);
     }
 };
+
