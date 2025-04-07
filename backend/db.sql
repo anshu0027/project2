@@ -25,6 +25,5 @@ CREATE TABLE transactions
     paymethod ENUM('cash', 'cheque', 'online') NOT NULL,
     datetime DATETIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
