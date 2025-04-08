@@ -6,7 +6,7 @@ export const createUser: RequestHandler = async (req, res, next) => {
         const { fname, lname, description, deposit, total_confirmed_amount, currency, status, due_date } = req.body;
         const [result]: any = await pool.query(
             `INSERT INTO users (firstname, lastname, introduction, deposit, total_confirmed_amount, currency, status, due_date)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [fname, lname, description, deposit, total_confirmed_amount, currency, status, due_date]
         );
         res.status(200).json({ success: true, insertId: result.insertId });
@@ -36,17 +36,21 @@ export const getShowcaseUsers: RequestHandler = async (req, res, next) => {
                     `SELECT SUM(amount) AS paid FROM transactions WHERE user_id = ?`,
                     [user.id]
                 );
-                const paid = (trans[0]?.paid || 0) + Number(user.deposit);
-                const total = Number(user.total_confirmed_amount);
-                const due = total - paid;
-                const completed = due <= 0;
+
+                // Ensure all calculations are integers
+                const deposit = parseInt(user.deposit, 10) || 0;
+                const transactionPaid = parseInt(trans[0]?.paid, 10) || 0;
+                const paid = transactionPaid + deposit;
+                const total = parseInt(user.total_confirmed_amount, 10) || 0;
+                const due = Math.max(total - paid, 0); // Avoid negative due
+                const completed = due === 0;
 
                 return {
                     id: user.id,
                     name: `${user.firstname} ${user.lastname}`,
                     user_id: user.id,
                     intro: user.introduction.slice(0, 50) + (user.introduction.length > 50 ? '...' : ''),
-                    deposit: `${user.deposit} ${user.currency}`,
+                    deposit: `${deposit} ${user.currency}`,
                     paid: `${paid} ${user.currency}`,
                     due: `${due} ${user.currency}`,
                     total: `${total} ${user.currency}`,
@@ -61,4 +65,3 @@ export const getShowcaseUsers: RequestHandler = async (req, res, next) => {
         next(err);
     }
 };
-
